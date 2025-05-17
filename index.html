@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cold War: Hidden Agendas</title>
+  <style>
+    body { font-family: sans-serif; background: #1a1a2e; color: #fff; padding: 20px; }
+    h1, h2 { text-align: center; }
+    .role-card { background: #16213e; margin: 10px auto; padding: 15px; border-radius: 8px; max-width: 500px; }
+    .btn { background: #0f3460; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; margin-top: 10px; cursor: pointer; }
+    .btn:hover { background: #533483; }
+    .fact-box { background: #0f3460; padding: 10px; margin-top: 10px; border-radius: 6px; font-size: 14px; }
+    .player-name { width: 90%; padding: 5px; margin-bottom: 10px; border-radius: 4px; border: none; font-size: 14px; }
+    .toggle-btn { margin-left: 10px; background: #533483; }
+  </style>
+</head>
+<body>
+  <h1>Cold War: Hidden Agendas</h1>
+
+  <h2>Role Generator</h2>
+  <div style="text-align:center">
+    <label>Number of players: <input type="number" id="playerCount" value="6" min="5" max="8"></label>
+    <button class="btn" onclick="assignRoles()">Assign Roles</button>
+    <button class="btn" onclick="downloadRoles()">Download Roles</button>
+  </div>
+  <div id="rolesContainer"></div>
+
+  <h2>Cold War Trivia</h2>
+  <div style="text-align:center">
+    <button class="btn" onclick="rollQuestion()">Roll Question</button>
+    <div id="questionBox" class="role-card" style="display:none">
+      <p id="questionText"><strong>Question:</strong> </p>
+      <p id="timer" style="display:none"><strong>Time left:</strong> <span id="timerDisplay">30</span> seconds</p>
+      <button class="btn toggle-btn" onclick="toggleAnswer()">Show Answer</button>
+      <p id="answerText" style="display:none"><strong>Answer:</strong> </p>
+    
+<button class="btn" onclick="resetQuestions()">Reset Questions</button>
+
+  </div>
+  </div>
+
+  <script>
+    const roles = [
+      { name: "KGB Agent", team: "USSR", description: "Eliminates a player each night.", fact: "The KGB was the Soviet Union's main security agency, involved in espionage and surveillance worldwide." },
+      { name: "Propagandist", team: "USSR", description: "Can replace one message during the game.", fact: "Propaganda was widely used during the Cold War. Both sides broadcast ideologies using TV, radio, and newspapers." },
+      { name: "Saboteur", team: "USSR", description: "Blocks a player from acting at night.", fact: "Sabotage operations aimed to destabilize opposing powers, often through covert interference and psychological tactics." },
+      { name: "CIA Analyst", team: "USA", description: "Can investigate one player per night.", fact: "The CIA played a major role in the Cold War, leading covert operations to influence foreign governments and counter Soviet expansion." },
+      { name: "Journalist", team: "USA", description: "Reveals a player's role once per game.", fact: "Investigative journalists exposed political corruption and espionage throughout the Cold War, becoming key players in public awareness." },
+      { name: "President", team: "USA", description: "Has double vote power during the day.", fact: "U.S. Presidents like Kennedy and Reagan had enormous influence during key Cold War moments, shaping policy through diplomacy and pressure." },
+      { name: "Double Agent", team: "Independent", description: "Survive and mislead others.", fact: "Double agents played both sides, often leading to major leaks and shifts in intelligence operations." },
+      { name: "Arms Dealer", team: "Independent", description: "Wins if survives 3 nights and left with 2 players.", fact: "Arms dealers profited by supplying weapons to both sides, fueling proxy wars in Africa, Asia, and Latin America." }
+    ];
+
+    const questions = [
+  {
+    "question": "What year did the Berlin Wall fall?",
+    "answer": "1989"
+  },
+  {
+    "question": "Which two superpowers were involved in the Cold War?",
+    "answer": "The United States and the Soviet Union"
+  },
+  {
+    "question": "What was the Cuban Missile Crisis?",
+    "answer": "A 13-day confrontation in 1962 over Soviet ballistic missiles in Cuba."
+  },
+  {
+    "question": "What military alliance was led by the United States during the Cold War?",
+    "answer": "NATO (North Atlantic Treaty Organization)"
+  },
+  {
+    "question": "What was the name of the Soviet counterpart to NATO?",
+    "answer": "The Warsaw Pact"
+  },
+  {
+    "question": "What is the term for indirect conflicts supported by Cold War powers?",
+    "answer": "Proxy wars"
+  },
+  {
+    "question": "Who gave the 'Iron Curtain' speech?",
+    "answer": "Winston Churchill"
+  },
+  {
+    "question": "What country was divided into East and West during the Cold War?",
+    "answer": "Germany"
+  },
+  {
+    "question": "What ideology did the USSR promote?",
+    "answer": "Communism"
+  },
+  {
+    "question": "What ideology did the USA promote?",
+    "answer": "Capitalism"
+  },
+  {
+    "question": "What event is considered the start of the Cold War?",
+    "answer": "The end of World War II and the division of Europe"
+  },
+  {
+    "question": "What was the Marshall Plan?",
+    "answer": "A U.S. program providing aid to Western Europe after WWII"
+  },
+  {
+    "question": "What was the primary goal of the Truman Doctrine?",
+    "answer": "To contain the spread of communism"
+  },
+  {
+    "question": "What Soviet leader initiated policies of glasnost and perestroika?",
+    "answer": "Mikhail Gorbachev"
+  },
+  {
+    "question": "What was the space race?",
+    "answer": "A competition between the USA and USSR to achieve space exploration milestones"
+  },
+  {
+    "question": "Which country launched the first satellite into space?",
+    "answer": "Soviet Union (Sputnik, 1957)"
+  },
+  {
+    "question": "Who was the U.S. President during the Cuban Missile Crisis?",
+    "answer": "John F. Kennedy"
+  },
+  {
+    "question": "What does MAD stand for in Cold War context?",
+    "answer": "Mutually Assured Destruction"
+  },
+  {
+    "question": "What wall symbolized the divide between East and West?",
+    "answer": "The Berlin Wall"
+  },
+  {
+    "question": "What was the Red Scare?",
+    "answer": "Fear of communism in the United States"
+  },
+  {
+    "question": "What was the arms race?",
+    "answer": "A competition to build more powerful nuclear weapons"
+  },
+  {
+    "question": "What Cold War conflict involved the U.S. in Southeast Asia?",
+    "answer": "The Vietnam War"
+  },
+  {
+    "question": "What Cold War conflict involved the Soviet Union in the 1980s?",
+    "answer": "The Soviet-Afghan War"
+  },
+  {
+    "question": "What was the U-2 incident?",
+    "answer": "A U.S. spy plane was shot down over the USSR in 1960"
+  },
+  {
+    "question": "What was the purpose of the Berlin Airlift?",
+    "answer": "To supply West Berlin after the Soviet blockade"
+  },
+  {
+    "question": "Who led the Soviet Union during most of the Cold War?",
+    "answer": "Leonid Brezhnev"
+  },
+  {
+    "question": "What country became communist after a revolution in 1949?",
+    "answer": "China"
+  },
+  {
+    "question": "What is d\u00e9tente?",
+    "answer": "The easing of strained relations between the USA and USSR"
+  },
+  {
+    "question": "What country tested its first atomic bomb in 1949?",
+    "answer": "Soviet Union"
+  },
+  {
+    "question": "What Cold War event happened in Hungary in 1956?",
+    "answer": "Hungarian Revolution, crushed by Soviet forces"
+  },
+  {
+    "question": "What U.S. Senator led anti-communist investigations?",
+    "answer": "Joseph McCarthy"
+  },
+  {
+    "question": "What was SALT?",
+    "answer": "Strategic Arms Limitation Talks between the US and USSR"
+  }
+];
+
+    let currentRoles = [];
+    let currentAnswerShown = false;
+    let timer;
+    let timeLeft = 30;
+
+    function assignRoles() {
+      const count = parseInt(document.getElementById('playerCount').value);
+      if (count > 8) {
+        alert("Maximum allowed players is 8.");
+        return;
+      }
+      const shuffled = [...roles].sort(() => 0.5 - Math.random());
+      const assigned = shuffled.slice(0, count);
+      currentRoles = assigned.map((role, index) => { return { name: `Player ${index + 1}`, role }; });
+
+      const container = document.getElementById('rolesContainer');
+      container.innerHTML = '';
+
+      currentRoles.forEach((entry, index) => {
+        const card = document.createElement('div');
+        card.className = 'role-card';
+
+        const nameInput = document.createElement('input');
+        nameInput.className = 'player-name';
+        nameInput.value = entry.name;
+        nameInput.oninput = (e) => currentRoles[index].name = e.target.value;
+
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'btn toggle-btn';
+        toggleBtn.textContent = 'Hide Role';
+        let hidden = false;
+
+        const roleInfo = document.createElement('div');
+        roleInfo.innerHTML = `
+          <p><strong>${entry.role.name}</strong> (${entry.role.team})</p>
+          <p>${entry.role.description}</p>
+          <div class="fact-box"><strong>Did you know?</strong><br>${entry.role.fact}</div>
+        `;
+
+        toggleBtn.onclick = () => {
+          hidden = !hidden;
+          roleInfo.style.display = hidden ? 'none' : 'block';
+          toggleBtn.textContent = hidden ? 'Show Role' : 'Hide Role';
+        };
+
+        card.appendChild(nameInput);
+        card.appendChild(toggleBtn);
+        card.appendChild(roleInfo);
+        container.appendChild(card);
+      });
+    }
+
+    function downloadRoles() {
+      let text = 'Assigned Roles:\n\n';
+      currentRoles.forEach(entry => {
+        text += `${entry.name}: ${entry.role.name} (${entry.role.team})\n`;
+      });
+      const blob = new Blob([text], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'cold_war_roles.txt';
+      link.click();
+    }
+
+    
+    let usedQuestions = [];
+
+    function rollQuestion() {
+      if (usedQuestions.length === questions.length) {
+        alert("All questions have been used.");
+        return;
+      }
+
+      let index;
+      do {
+        index = Math.floor(Math.random() * questions.length);
+      } while (usedQuestions.includes(index));
+
+      usedQuestions.push(index);
+      const random = questions[index];
+
+      document.getElementById('questionText').innerHTML = `<strong>Question:</strong> ${random.question}`;
+      document.getElementById('answerText').innerHTML = `<strong>Answer:</strong> ${random.answer}`;
+      document.getElementById('questionBox').style.display = 'block';
+      document.getElementById('answerText').style.display = 'none';
+      currentAnswerShown = false;
+      document.querySelector('#questionBox .toggle-btn').textContent = 'Show Answer';
+      document.querySelector('#questionBox .toggle-btn').disabled = false;
+      document.getElementById('timer').style.display = 'block';
+      startTimer();
+    }
+
+
+    // original rollQuestion removed
+    function rollQuestion() { // shadowed for safety
+      const random = questions[Math.floor(Math.random() * questions.length)];
+      document.getElementById('questionText').innerHTML = `<strong>Question:</strong> ${random.question}`;
+      document.getElementById('answerText').innerHTML = `<strong>Answer:</strong> ${random.answer}`;
+      document.getElementById('questionBox').style.display = 'block';
+      document.getElementById('answerText').style.display = 'none';
+      currentAnswerShown = false;
+      document.querySelector('#questionBox .toggle-btn').textContent = 'Show Answer';
+      document.querySelector('#questionBox .toggle-btn').disabled = false;
+      document.getElementById('timer').style.display = 'block';
+      startTimer();
+    }
+
+    function toggleAnswer() {
+      currentAnswerShown = !currentAnswerShown;
+      document.getElementById('answerText').style.display = currentAnswerShown ? 'block' : 'none';
+      document.querySelector('#questionBox .toggle-btn').textContent = currentAnswerShown ? 'Hide Answer' : 'Show Answer';
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      timeLeft = 30;
+      document.getElementById('timerDisplay').textContent = timeLeft;
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timerDisplay').textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          document.querySelector('#questionBox .toggle-btn').disabled = true;
+          document.querySelector('#questionBox .toggle-btn').textContent = 'Time Expired';
+        }
+      }, 1000);
+    }
+  
+    function resetQuestions() {
+      usedQuestions = [];
+      alert("Questions have been reset.");
+    }
+
+  </script>
+</body>
+</html>
